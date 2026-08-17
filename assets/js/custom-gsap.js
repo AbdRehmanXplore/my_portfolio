@@ -56,6 +56,30 @@
       normalizeScroll: false,
       ignoreMobileResize: true,
     });
+
+    // Delegated on document (not attached per-link) so this still works for
+    // nav links the mobile-menu script clones in after this file runs.
+    function inPageLink(e) {
+      var link = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!link) return null;
+      var href = link.getAttribute("href");
+      if (!href || href.length < 2) return null;
+      var target = document.querySelector(href);
+      return target ? target : null;
+    }
+    // ScrollSmoother auto-scrolls a newly focused element into center view;
+    // since focus fires on mousedown (before our click handler runs), that
+    // fights with the scrollTo below. Suppress focus-on-click here so only
+    // our intended scroll happens.
+    document.addEventListener("mousedown", function (e) {
+      if (inPageLink(e)) e.preventDefault();
+    });
+    document.addEventListener("click", function (e) {
+      var target = inPageLink(e);
+      if (!target) return;
+      e.preventDefault();
+      smoother.scrollTo(target, true, "top top");
+    });
   }
 
   ////////////////////////////////////////////////////

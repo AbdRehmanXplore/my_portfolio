@@ -8768,12 +8768,14 @@ body.tw-magic-cursor #magic-cursor {
     object-fit: cover;
   }
 }
-.portfolio-list ul li a {
+.portfolio-list ul li a,
+.portfolio-list ul li span {
   border: 1px solid rgba(2, 9, 15, 0.1);
   border-radius: 90px;
   padding: 6px 20px 6px 40px;
 }
-.portfolio-list ul li a::before {
+.portfolio-list ul li a::before,
+.portfolio-list ul li span::before {
   content: "";
   position: absolute;
   width: 10px;
@@ -8785,19 +8787,23 @@ body.tw-magic-cursor #magic-cursor {
   transform: translateY(-50%);
   transition: 0.4s;
 }
-.portfolio-list ul li a:hover::before {
+.portfolio-list ul li a:hover::before,
+.portfolio-list ul li span:hover::before {
   background: hsl(var(--white));
 }
 
-.portfolio-two-list ul li a {
+.portfolio-two-list ul li a,
+.portfolio-two-list ul li span {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 90px;
   padding: 6px 20px 6px 40px;
 }
-.portfolio-two-list ul li a::before {
+.portfolio-two-list ul li a::before,
+.portfolio-two-list ul li span::before {
   background: hsl(var(--white));
 }
-.portfolio-two-list ul li a:hover::before {
+.portfolio-two-list ul li a:hover::before,
+.portfolio-two-list ul li span:hover::before {
   background: hsl(var(--black));
 }
 @media screen and (max-width: 575px) {

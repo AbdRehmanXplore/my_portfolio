@@ -294,5 +294,116 @@
     }
 
     initRipples();
+
+    ////////////////////////////////////////////////////
+    // 15. Contact Form Js
+    function showToast(type, title, text) {
+      var icon =
+        type === "success" ? "ph-check-circle" : "ph-warning-circle";
+      var $toast = $(
+        '<div class="toast-message ' +
+          type +
+          '">' +
+          '<div class="toast-message__content">' +
+          '<span class="toast-message__icon"><i class="ph-bold ' +
+          icon +
+          '"></i></span>' +
+          "<div>" +
+          '<h6 class="toast-message__title"></h6>' +
+          '<p class="toast-message__text"></p>' +
+          "</div>" +
+          '<button type="button" class="toast-message__close"><i class="ph ph-x"></i></button>' +
+          "</div>" +
+          '<div class="progress__bar"></div>' +
+          "</div>",
+      );
+      $toast.find(".toast-message__title").text(title);
+      $toast.find(".toast-message__text").text(text);
+      $("#toast-container").append($toast);
+      requestAnimationFrame(function () {
+        $toast.addClass("active");
+      });
+      function remove() {
+        $toast.removeClass("active");
+        setTimeout(function () {
+          $toast.remove();
+        }, 500);
+      }
+      $toast.find(".toast-message__close").on("click", remove);
+      setTimeout(remove, 3500);
+    }
+
+    var $contactForm = $("#contact-form");
+    if ($contactForm.length) {
+      // If we ever land back here after a native (non-AJAX) fallback submit,
+      // show the success toast and clean the URL up.
+      if (window.location.search.indexOf("web3forms=success") !== -1) {
+        showToast(
+          "success",
+          "Message sent!",
+          "Thanks for reaching out, I'll get back to you soon.",
+        );
+        var cleanUrl =
+          window.location.pathname + window.location.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+
+      $contactForm
+        .find('input[name="redirect"]')
+        .val(
+          window.location.origin +
+            window.location.pathname +
+            "?web3forms=success#contact",
+        );
+
+      $contactForm.on("submit", function (e) {
+        e.preventDefault();
+        var $form = $(this);
+        var $btn = $form.find('button[type="submit"]');
+        var btnText = $btn.text();
+        $btn.prop("disabled", true).text("sending...");
+
+        var formObject = {};
+        new FormData(this).forEach(function (value, key) {
+          formObject[key] = value;
+        });
+
+        fetch($form.attr("action"), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(formObject),
+        })
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
+            if (data.success) {
+              showToast(
+                "success",
+                "Message sent!",
+                "Thanks for reaching out, I'll get back to you soon.",
+              );
+              $form[0].reset();
+              $btn.prop("disabled", false).text(btnText);
+            } else {
+              showToast(
+                "danger",
+                "Something went wrong",
+                data.message || "Please try again in a moment.",
+              );
+              $btn.prop("disabled", false).text(btnText);
+            }
+          })
+          .catch(function () {
+            // AJAX blocked (e.g. CORS in this environment) — fall back to a
+            // real form submit, which isn't subject to CORS at all.
+            $form.off("submit");
+            $form[0].submit();
+          });
+      });
+    }
   });
 })(jQuery);
